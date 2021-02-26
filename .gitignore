@@ -1,3 +1,16 @@
 projects/project_1/dataset_project_1
 projects/project_2/dataset_project_2
 projects/project_3/dataset_project_3
+my_project/dataset_project_1
+my_project/.idea
+my_project/eda/*.csv
+my_project/report/images
+my_project/report/report.aux
+my_project/report/report.bbl
+my_project/report/report.blg
+my_project/report/report.log
+my_project/report/report.nlg
+my_project/report/report.nlo
+my_project/report/report.nls
+my_project/report/report.out
+my_project/report/report.synctex.gz
