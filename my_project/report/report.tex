@@ -134,131 +134,293 @@ EDA for this model was divided into 2 main parts i.e. understanding the entries 
 \subsection{Understanding file entries}
 
 \subsubsection{allergies.csv}
-After Performing EDA on \textit{allergies.csv} the following was discovered:
+
+
+\begin{table}[H]
+	\begin{tabular}{l|l}
+		\textbf{File}                & \textbf{Operation} \\ \hline
+		allergies\_uvc1.csv & Unique Values Count on "DESCRIPTION"   \\
+		allergies\_uvc2.csv & Unique Values Count on "PATIENT"  \\
+		allergies\_nuvc1    & Unique Values Count on "PATIENT" on dataframe filtered by null   values in "STOP"   \\
+		allergies\_unwanted & Count of unwanted data in the dataframe  \\
+	\end{tabular}
+	\caption{Files with results of EDA on allergies.csv}
+\end{table}
+
 \begin{itemize}
-	\item A unique value count was performed on "DESCRIPTION" column to determine the most common and least common type of allergy, the results of this operation are recorded in \textit{allergy\_DESCRIPTION.csv}. Based on the observation of \textit{allergy\_DESCRIPTION.csv} it was observed that \hl{allergy to mould is the most common tyoe of allergy whereas allergy to soya is the least common type of allergy.}
+	\item \textbf{Allergy to mould} is the most frequent entry and \textbf{Allergy to soya} is the least common entry (see \textit{allergies\_uvc1.csv})
 	
-	\item Unique value count was also performed on "PATIENTS" column and the results are recorded in \textit{allergies\_patient.csv}. Based on the enteries in \textit{allergies\_PATIENT.csv} it was observed that \hl{it is possible for a patient to have multiple allergies, however it contains information about allergies in the past and ongoing allergies as well.} Thus a further, investigation is required to determine if a patient could have multiple ongoing allergies.
+	\item It is possible for a single patient id to be listed against multiple enteries in \textit{allergies.csv}, (\textit{see allergies\_uvc2.csv}) however is it possible for a patient to have multiple allergies remain to be seen.
 	
-	\item To investigate if it is possible for a person to have multiple ongoing allergies the dataframe in \textit{allergies.csv} was filtered by null values in the "STOP" column and then a unique value caount was performed on the "PATIENT"  column. The results of this operation were stored in \textit{allergies\_ongoing.csv}. After examing the enteries in \textit{allergies\_ongoing.csv} it can be observed that \hl{it is possible for a patient to have multiple ongoing allergies.}
+	\item It is possible for a patient to have multiple ongoing allergies (see \textit{allergies\_nuvc1})
 	
-	\item Record of unwanted data in the \textit{allergies.csv} could be found in the file named \textit{allergies\_unwanted.csv}. \hl{There are a few NaN values in the stop column of \textit{allergies.csv}, this could be attributed to the ongoing allergies of a patient and are not an anamoly}
+	\item "STOP" column in \textit{allergies.csv} have some null values, but this cannot be attributed to unwanted or missing data, it represents entries with ongoing allergies.
+	
 \end{itemize}
 
 \subsubsection{careplans.csv}
-After performing EDA operations on \textbf{\textit{careplans.csv}} the following was discovered:
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{p{4.5cm}|p{15cm}}
+		\textbf{File}                & \textbf{Operation} \\ \hline
+		careplans\_uvc1.csv & Unique Values Count on "PATIENT"   \\
+		careplans\_uvc2.csv & Unique Values Count on "DESCRIPTION"  \\
+		careplans\_uvc3.csv    & Unique Values Count on "REASONDESCRIPTION"   \\
+		careplans\_nuvc1.csv    & Unique Values Count on "PATIENT" on dataframe filtered by null values in "STOP" \\
+		careplans\_nuvc2.csv    & Unique Values Count on "DESCRIPTION" on dataframe filtered by null values in "REASONDESCRIPTION"  \\
+		careplans\_unwanted.csv & Count of unwanted data in the dataframe  \\
+	\end{tabular}
+	\caption{Files with results of EDA on careplans.csv}
+\end{table}
+
+
 \begin{itemize}
-	\item A unique value count was performed on "PATIENT" column of \textit{careplans.csv} and the results were stored in \textit{careplans\_PATIENT.csv}. After observing the enteries in \textit{careplans\_PATIENT.csv} it was observed the \hl{it is possible for a patient to  have multiple careplans, however further investigation is required to check if it is possible for a patient to have multiple ongoing careplans.}
+	\item It is possible for a patient to  have multiple careplans (see \textit{careplans\_uvc1.csv}), however further investigation is required to check if it is possible for a patient to have multiple ongoing careplans.
 	
-	\item A unique value count was performed on "PATIENT" column of \textit{careplans.csv} after filtering it by null values in the "STOP" column. The results of this operation are stored in \textit{careplans\_ongoing.csv}, based on the data in the afromentioned file it was observed that \hl{it is possible to have single patient id listed against multiple ongoing careplans}
+	\item It is possible for a single patient to have multiple ongoing careplans (see \textit{careplans\_nuvc1.csv})
 	
 	\item To study the most common reasons careplans are used for, it was deterimined to perform a unique Values count on the columns named "DESCRIPTION" and "REASONDESCRIPTION" of the \textit{careplans.csv}. Perfomring a unique values count on either one of the column will not be sufficient as \hl{single value in the "DESCRIPTION" colummn could be listed  against multiple entries in the "REASONDESCRIPTION" column.}
 	
-	\item The results of performing a unique value count on "DESCRIPTION" column are stored in \textit{careplans\_DESCRIPTIONS.csv}. Based on these results it can be observed that \hl{careplans are most commonly used for respiratory therapy.}
+	\item Careplans are most commonly used for \textbf{respiratory therapy} (see \textit{careplans\_uvc2.csv})
 	
-	\item Similarly a unique value count was also performed on "REASONDESCRIPTION" column resulting in the formation of \textit{careplans\_REASONDESCRIPTION.csv}. After studying the data in \textit{careplans\_REASONDESCRIPTION.csv} it was observed that \hl{most frequently occuring entry in the "REASONDESCRIPTION" was Acute Bronchitis(Disorder) which is a respiratory disorder thus justifying the fact that Respiratory Therepy is the most commonly occuring value in the "DESCRIPTION" column.}
+	\item Careplans are most commonly used for treatment of \textbf{Acute Bronchitis(Disorder)} (see \textit{careplans\_uvc3.csv}) which is a respiratory disorder thus justifying the fact that Respiratory Therepy is the most commonly occuring value in the "DESCRIPTION" column
 	
-	\item It was observed that \textit{careplans.csv} contain some entries where the "REASONDESCRIPTION" was empty but "DESCRIPTION" did contained some entries, on closer observation it was observed that whenever the "REASONDESCRIPTION" column was empty the entries in the "DESCRIPTION" column did  not reflected any major condition, thus it was decided to observe how the patients are using the careplans when there was not a major medical illness, to perform this operation the dataset was filtered by null values in the "REASONDESCRIPTION" column and unique value count was perfomed on the "DESCRIPTION" column the resultant data was stored in \textit{careplans\_REASONDESCRIPTION\_null.csv}. After performing this operation it was observed that \hl{when there was no primary medical issue the careplans are most commonly used for Self Care Interventions.}
+	\item The "STOP" column contains NaN values but it could be attributed to ongoing careplans and cannot be considered as unwanted or bad data. The "REASONDECSRIPTION" column also contains NaN values it represents the use of careplans for non-medical reasons. \hl{Thus we can say that \textit{careplans.csv} does not contains any unwanted data} (see \textit{careplans\_unwanted.csv}).
 	
-	\item The file named \textit{careplans.csv} was also analyzed for unwanted data. As per the entries in  \newline \textit{careplans\_unwanted.csv} the only unwanted data present in\textit{careplans.csv} were the NaN values present in the \textit{"STOP","REASONCODE"} and \textit{"REASONDESCRIPTION"} column. This cannot be treated as null values. The empty columns in the \textit{"STOP"} column represent that the care plan is still ongoing whereas the NaN values in the \textit{"REASONCODE"} and \textit{"REASONDESCRIPTION"} column represnt the cases when careplans are used for no major medical reason.
+	\item For non-medical reason (i.e. when "REASONDESCRIPTION" has a NaN value) the careplans are most commonly used for \textbf{Self-care interventions (procedure)} (see \textit{careplans\_nuvc2.csv}).
+	
 \end{itemize}
 
 \subsubsection{conditions.csv}
-Based on the enteries in \textit{conditions.csv}, the following eda approach was followed:
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{p{5cm}|p{14.5cm}}
+		\textbf{File}                & \textbf{Operation} \\ \hline
+		conditions\_uvc1.csv     & Unique Values Count on "DESCRIPTION"   \\
+		conditions\_nuvc1.csv    & Unique Values Count on "DESCRIPTION"  on dataframe filtered by null values in "STOP" \\
+		conditions\_psudo\_chronic.csv & List of psudo chronic conditions i.e conditions which have no "STOP" values in some cases but do have a "STOP" value somewhere else.
+	\end{tabular}
+	\caption{Files with results of EDA on conditions.csv}
+\end{table}
+
 \begin{itemize}
-	\item A unique value count was performed on the "DESCRIPTION" column to discover the most and least common conditions. As per the entries in \textit{conditions\_DESCRIPTION.csv} it was discoverd that \hl{Viral Sinusitis (disorder) was the most common condition}
+	\item Viral Sinusitis (disorder) was the most common condition (see \textit{conditions\_uvc1.csv})
 	
-	\item It was observed that the "STOP" column in the \textit{careplans.csv} had some null values, thus giving the impression that certain conditions could be chronic in nature thus the dataset was filtered by null values in the "STOP" column and unique values count was performed on the "DESCRIPTION" column, the results of this operation are stored in \textit{condition\_STOP\_null.csv}. However this approach has a major drawback, \hl{some conditions which do not have a stop date in certain cases do have stop dates in some other cases.} 
+	\item It was observed that the "STOP" column in the \textit{careplans.csv} had some null values, thus giving the impression that certain conditions could be chronic in nature thus the dataset was filtered by null values in the "STOP" column and unique values count was performed on the "DESCRIPTION" column, the results of this operation are stored in \textit{condition\_nuvc1.csv}. However this approach has a major drawback, \hl{some conditions which do not have a stop date in certain cases do have stop dates in some other cases.} 
 	
-	\item In order to check weather a condition is trully chronic in nature or not, further investigation was required. The dataset was checked to see if any of the conditions in the \textit{conditions\_STOP\_null.csv} has stop dates anywhere in the dataset. The enteries pertaining to this investigation are recoded in \textit{conditions\_psudo\_chronic.csv}.
+	\item In order to check weather a condition is trully chronic in nature or not, further investigation was required. The dataset was checked to see if any of the conditions in the \textit{conditions\_nuvc1.csv} has stop dates anywhere in the dataset. The enteries pertaining to this investigation are recoded in \textit{conditions\_psudo\_chronic.csv}.
 	
-	\item To get the list of final chronic conditions, a difference operation was performed between the list of conditions in \textit{conditions\_STOP\_null.csv} and \textit{conditions\_psudo\_chronic.csv}. The resultant conditions were recorded in \textit{conditions\_chronic.csv}
+	\item To get the list of final chronic conditions, a difference operation was performed between the list of conditions in \textit{conditions\_STOP\_null.csv} and \textit{conditions\_psudo\_chronic.csv}. The resultant conditions were recorded in \textit{conditions\_chronic.csv} stored in the \textit{preprocessed} folder
 \end{itemize}
 
 \subsubsection{encounters}
-\textit{encounter.csv} has multiple relationships with other files hence it is important that a more detailed analysis is performed in this file. Based on the entries in this file the following eda techniques were employed:
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{p{5cm}|p{14.5cm}}
+		\textbf{File}             & \textbf{Operation} \\ \hline
+		encounters\_uvc1.csv      & Unique Values Count on "REASONDESCRIPTION"   \\
+		encounters\_uvc2.csv      & Unique Values Count on "DESCRIPTION"   \\
+		encounters\_uvc3.csv      & Unique Values Count on "ENCOUNTERCLASS"   \\
+		encounters\_nuvc1.csv     & Unique Values Count on "DESCRIPTION" filtered by NaN values "REASONDESCRIPTION" \\
+		encounters\_nuvc2.csv     & Unique Values Count on "ENCOUNTERCLASS" filtered by NaN values "REASONDESCRIPTION" \\
+		encounters\_ct1.csv       & Cross Tabulation operation between "REASONDESCRIPTION" and "ENCOUNTERCLASS" \\
+		encounters\_ct2.csv       & Cross Tabulation operation between "DESCRIPTION" and "ENCOUNTERCLASS" \\
+		encounters\_ct3.csv       & Cross Tabulation between "DESCRIPTION" and "REASONDESCRIPTION" column \\
+		encounters\_unwanted. csv & Count of Unwanted data on the dataframe  
+	\end{tabular}
+	\caption{Files with results of EDA on encounters.csv}
+\end{table}
+
 \begin{itemize}
-	\item Based on a unique value count of the "REASONDESCRIPTION" column, it was observed that \hl{most frequent entry in the "REASONDESCRIPTION" column is a null value and the second most frequent value is Normal Pregenancy.} The results of unique value count are stored in \hl{careplans\_REASONDESCRIPTION.csv}
+	\item Most encounters happen because of non-medical reasons i.e. \textbf{NaN values} and the second most common cause of encounters is \textbf{Normal Pregenancy} (see \textit{encounters\_uvc1.csv}).
 	
-	\item Unique value count was also performed on "DESCRIPTION" column. It was observed that the \hl{most common entry in the "DESCRIPTION" column is well child visit(procedure).} The results of this operation are stored in \textit{encounters\_DESCRIPTION.csv}. 
+	\item As discussd above the most encounters are due to non-medical reasons, a further analysis reveals that most encounters happen can be classified as \textbf{Well child visit (procedure)} (see \textit{encounters\_uvc2.csv}) .
 	
-	\item After performing a unique value count on the "ENCOUNTERCLASS" it was discovered that \hl{ambulatory is the most common value i.e. for most of he medical encounters the patient walked in for the procedure, assesment, consultation etc.}
+	\item For most of the encounters the patient was in an ambulatory state i.e. the patient is not bed ridden and can walk.
 	
-	\item \textit{encounters.csv} was also analyzed for unwanted data and the output was stored in \textit{encounters\_unwanted.csv}. It was observed that only "REASONCODE" and "REASONDESCRIPTION" had NaN values and "PAYER\_COVERAGE" had some zeros. \hl{It is possible that a patient had no insurance coverage at all hence the zeros in the "PAYER\_COVERAGE" column cannot be treated as unwanted values values however the null values in t "REASONCODE" and "REASONDESCRIPTION" column need to be investigated further.} 
 	
-	\item To investigate the entries where "REASONDESCRIPTION" is NaN value it was decided to filter the database by NaN values in the "REASDESCRIPTION" column and perform a unique values count on the "DESCRIPTION" and "ENCOUNTERCLASS" column, the results of these operations are stored in \textit{encounters\_RESAONDESCRIPTION\_null\_DESCRIPTION.csv} and \newline \textit{encounters\_REASONDESCRIPTION\_null\_ENCOUNTERCLASS.csv}.  
+	\item \textit{encounters.csv} was also analyzed for unwanted data and the output was stored in \textit{encounters\_unwanted.csv}. It was observed that only "REASONDESCRIPTION" had \textbf{NaN values} and "PAYER\_COVERAGE" had some zeros. \hl{It is possible that a patient had no insurance coverage at all hence the zeros in the "PAYER\_COVERAGE" column cannot be treated as unwanted values values however the null values in "REASONDESCRIPTION"  column need to be investigated further.} Thus at this point it can't be stated with absolute certainty that \textit{encounters.csv} does not have any unwanted data (see \textit{encounters\_unwanted.csv}). 
 	
-	\item \hl{While comparing the entries in \textit{encounters\_REASONDESCRIPTION\_null\_DESCRIPTION.csv} and \textit{encounters\_DESCRIPTION.csv} it can be noted that some values have the same count in both the files thus indicating that all the enteries with that particular value occur when the "REASONDESCRIPTION" column has NaN value. It can also be noted \textit{encounters\_REASONDESCRIPTION\_null\_DESCRIPTION.csv} has 33 unique values whereas \textit{encounters\_DESCRIPTION.csv} has 54 unique entries, thus based on this observation we can conclude that some values only occur when the "REASONDESCRIPTION" column has some value i.e. when the REASONDESCRIPTION column is not NaN.}
+	\item For encounters which are not because any major medical purpouse the most common enounters are for  \textbf{Well child visit (procedure)} (see \textit{encounters\_nuvc2.csv}) . After comparing the data in \textit{encounters\_uvc2.csv} and \textit{encounters\_nuvc1.csv} we can say that all the encounters of the type \textbf{Well child visit (procedure)} are for non-medical reasons.
 	
-	\item A similar observation can be made for \textit{encounters\_REASONDESCRIPTION\_null\_ENCOUNTERCLASS.csv} and \textit{encounters\_ENCOUNTERCLASS.csv}. Although the number of unique values in both the files are same the frequency count of these values are different thus we can say that \hl{even when the "REASONDESCRIPTION" column has NaN values all type of values in the "ENCOUNTERCLASS" column can be observed.}
+	\item It was also observed that most of the encounters for non-medical reason are most commonly of the type \textbf{wellness} (see \textit{encounters\_nuvc2.csv})
 	
-	\item A further analysis is required on enteries where the "REASONDESCRIPTION" column has NaN values.
+	\item On a closer observation it was noticed that a \hl{single entry in "DESCRIPTION" column could be listed against multiple entries in "REASONDESCRIPTION" and "ENCOUNTERCLASS".} Thus several cross tabulation operations were performed to understand the distribution of the data across multiple categories.
+	
+	\item Most of the entries in "REASONDESCRIPTION" and "DESCRIPTION" could be listed across multiple entries of "ENCOULNTERCLASS" (see \textit{encounters\_ct1.csv} and \textit{encounters\_ct2.csv}).
+	
+%	\item \hl{While comparing the entries in \textit{encounters\_REASONDESCRIPTION\_null\_DESCRIPTION.csv} and \textit{encounters\_DESCRIPTION.csv} it can be noted that some values have the same count in both the files thus indicating that all the enteries with that particular value occur when the "REASONDESCRIPTION" column has NaN value. It can also be noted \textit{encounters\_REASONDESCRIPTION\_null\_DESCRIPTION.csv} has 33 unique values whereas \textit{encounters\_DESCRIPTION.csv} has 54 unique entries, thus based on this observation we can conclude that some values only occur when the "REASONDESCRIPTION" column has some value i.e. when the REASONDESCRIPTION column is not NaN.}
+	
+%	\item A similar observation can be made for \textit{encounters\_REASONDESCRIPTION\_null\_ENCOUNTERCLASS.csv} and \textit{encounters\_ENCOUNTERCLASS.csv}. Although the number of unique values in both the files are same the frequency count of these values are different thus we can say that \hl{even when the "REASONDESCRIPTION" column has NaN values all type of values in the "ENCOUNTERCLASS" column can be observed.}
+	
+%	\item A further analysis is required on enteries where the "REASONDESCRIPTION" column has NaN values.
+	\item It must also be noted that several entries in the "DESCRIPTION" column could be listed against more than one entry in the "REASONDESCRIPTION" column (see \textit{encounters\_ct3.csv}) .
 	
 	\item The "ENCOUTERCLASS" column has several unique values, we are particularly interested in the encounters where "ENCOUTERCLASS" is emergency and urgentcare.
 	
-	\item Two cross tabulation operations were performed between three columns and the results were stored as csv. The first cross tabulation was performed between "DESCRIPTION" and "REASONDESCRIPTION" column and the results were stored in \newline \textit{encounters\_crosstab\_REASONDESCRIPTION\_ENCOUNTERCLASS.csv}. Another cross tabulation operation was performed between "DESCRIPTION" and "ENCOUNTERCLASS" and the results were stored in \textit{encounters\_crosstab\_REASONDESCRIPTION\_ENCOUNTERCLASS.csv}. Based on the results of cross tabulation data it can be clearly seen that several values of the "DESCRIPTION" and "REASONDESCRIPTION" column are distributed across various types of "ENCOUNTERCLASS" values. \hl{A further investigation is required for cases which are not purley of type \textbf{emergency} and \textbf{ungertcare} }
+%	\item Two cross tabulation operations were performed between three columns and the results were stored as csv. The first cross tabulation was performed between "DESCRIPTION" and "REASONDESCRIPTION" column and the results were stored in \newline \textit{encounters\_crosstab\_REASONDESCRIPTION\_ENCOUNTERCLASS.csv}. Another cross tabulation operation was performed between "DESCRIPTION" and "ENCOUNTERCLASS" and the results were stored in \textit{encounters\_crosstab\_REASONDESCRIPTION\_ENCOUNTERCLASS.csv}. Based on the results of cross tabulation data it can be clearly seen that several values of the "DESCRIPTION" and "REASONDESCRIPTION" column are distributed across various types of "ENCOUNTERCLASS" values. \hl{A further investigation is required for cases which are not purley of type \textbf{emergency} and \textbf{ungertcare} }
 \end{itemize}
 
 
 \subsubsection{imaging\_studies.csv}
-Based on the entries of \textit{imaging\_studies.csv} the following eda approach was followed:
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{p{5.5cm}|p{14cm}}
+		\textbf{File}                  & \textbf{Operation} \\ \hline
+		imaging\_studies\_uvc1.csv     & Unique Values Count on "BODYSTIE\_DECSRIPTION" \\
+		imaging\_studies\_uvc2.csv     & Unique Values Count on "MODALITY\_DESCRIPTION" \\
+		imaging\_studies\_ct1.csv      & Cross Tabulation operation on "BODYSITE\_DESCRIPTION" and "SOP\_DESCRIPTION" \\
+		imaging\_studies\_ct2.csv      & Cross Tabulation operation on "MODALITY\_DESCRIPTION" and "SOP\_DESCRIPTION" \\
+		imaging\_studies\_unwanted.csv & Count of Unwanted Data in Dataframe
+	\end{tabular}
+	\caption{Files with results of EDA on imaging\_studies.csv}
+\end{table}
+
+%Based on the entries of \textit{imaging\_studies.csv} the following eda approach was followed:
 \begin{itemize}
-	\item  A unique value count was performed on "BODYSITE\_DESCRIPTION" column and the results were stored in \textit{imaging\_studies\_BODYSITE\_DESCRIPTION.csv}. It was discoverd that \hl{Thoracic Structutre (Body Study) is the most examined body structure.}
-	\item Unique value count was also performed on "SOP\_DESCRIPTION" column, based on the data and the results were stored in \textit{imaging\_studies\_SOP\_DESCRIPTION.csv}. Based on the enteries of this file it was discovered that \hl{Digital X-rays are the most commonly performed procedures.}
 	
-	\item A cross tabulation operation was performed between "BODYSITE\_DESCRIPTION" and "SOP\_DESCRIPTION" and the results were stored in \textit{imaging\_studies\_crasstab\_BODYSITE\_DESCRIPTION\_SOP\_DESCRIPTION.csv}. Based on the data in this file it can be concluded that \hl{only one type of tests are being done on the body parts except for Thoracic Structure. It must also be noted that that this file also contains an entry named \textbf{\textit{thoracic}} which could be similar to \textbf{\textit{Thoracic Stucture(Body Structre)}}} 
+	\item Thoracic Structutre (Body Study) is the most examined body structure (see \textit{imaging\_studies\_uvc1.csv}) .
 	
-	\item Another cross tabulation operation was performed between "MODALITY\_DESCRIPTION" and "SOP\_DESCRIPTION" and the results were stored in \textit{imaging\_studies\_crosstab\_MODALITY\_DESCRIPTION\_SOP\_DESCRIPTION.csv}. However the results of this cross tabulation was not of any significant importance. \hl{It must be noted that "MODALITY\_DECSRIPTION" column only contains the category under which the imaging study falls.} 
+	\item \textbf{Digital X-ray} os the most commonly performed procedure
 	
-	\item \textit{imaging\_studies.csv} was also analyzed for unwanted data and the results were stored in \textit{imaging\_studies\_unwanted.csv}. Based on the entries of \textit{imaging\_studies\_unwanted.csv} it can be said that \hl{\textit{imaging\_studies.csv} does not contain any unwanted data.}
+	\item It can be noted that only a single type of test is performed on a single body part
+
+	\item \textit{Thoracic structure (body structure)} is the only value in "BODYSITE\_DECSRIPTION" that is listed against multiple values in the "SOP\_DESCRIPTION" column (see \textit{imaging\_studies\_ct1.csv}) . It must also be noted that "BODYSITE\_DESCRIPTION" also have values \textbf{Thoracic structure} and \textbf{thoracic} which are listed against a single value in "SOP\_DESCRIPTION"  column. \hl{However if these represent different body site or are just a different values for the the same body site is a topic of further analysis.} All ohter values in "BODYSITE\_DESCRIPTION" column are listed against a single value in "SOP\_DESCRIPTION" column. 
+	
+%	\item A cross tabulation operation was performed between "BODYSITE\_DESCRIPTION" and "SOP\_DESCRIPTION" and the results were stored in \textit{imaging\_studies\_crasstab\_BODYSITE\_DESCRIPTION\_SOP\_DESCRIPTION.csv}. Based on the data in this file it can be concluded that \hl{only one type of tests are being done on the body parts except for Thoracic Structure. It must also be noted that that this file also contains an entry named \textbf{\textit{thoracic}} which could be similar to \textbf{\textit{Thoracic Stucture(Body Structre)}}} 
+	
+%	\item Another cross tabulation operation was performed between "MODALITY\_DESCRIPTION" and "SOP\_DESCRIPTION" and the results were stored in \textit{imaging\_studies\_crosstab\_MODALITY\_DESCRIPTION\_SOP\_DESCRIPTION.csv}. However the results of this cross tabulation was not of any significant importance. \hl{It must be noted that "MODALITY\_DECSRIPTION" column only contains the category under which the imaging study falls.} 
+	
+	\item \textit{imaging\_studies.csv} does not contains any unwanted data (see \textit{imaging\_studies\_unwanted.csv})
+	
 \end{itemize}
 
 \subsubsection{immunizations.csv}
 
-Based on the data in \textit{immunization.csv} the following eda approach was adopted:
+\begin{table}[H]
+	\centering
+	\begin{tabular}{p{5cm}|p{14.5cm}}
+		\textbf{File}              & \textbf{Operation} \\ \hline
+		immunization\_uvc1.csv     & Unique Values Count on "DESCRIPTION" column\\
+		immunization\_unwanted.csv & Count of Unwanted Data on Dataframe
+	\end{tabular}
+	\caption{Files with results of EDA on immunizations.csv}
+\end{table}
+
+%Based on the data in \textit{immunization.csv} the following eda approach was adopted:
 
 \begin{itemize}
-	\item A unique value count was performed on the "DESCRIPTION" column and the results were stored in \textit{immunization\_DESCRIPTION.csv}. Based on the description it was discoverd that \hl{\textit{\textbf{Influenza  seasonal  injectable  preservative free}} was the most frequently occurring entry.}
+	\item \textbf{Influenza  seasonal  injectable  preservative free} was the most frequently occurring entry (see \textit{immunization\_uvc1.csv}).
 	
-	\item \textit{immunization.csv} was also analyzed for unwanted data. \hl{No unwanted data was found in \textit{immunization.csv}.}
+%	\item A unique value count was performed on the "DESCRIPTION" column and the results were stored in \textit{immunization\_DESCRIPTION.csv}. Based on the description it was discoverd that \hl{\textit{\textbf{Influenza  seasonal  injectable  preservative free}} was the most frequently occurring entry.}
+	
+%	\item \textit{immunization.csv} was also analyzed for unwanted data. \hl{No unwanted data was found in \textit{immunization.csv}.}
+
+	\item \textit{immunization.csv} contains no unwanted data (see \textit{immunization\_unwanted.csv})
+	
 \end{itemize}
 
 \subsubsection{medications.csv}
 
-Based on the data in \textit{medications.csv} the following eda approach was adopted:
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{p{4.5cm}|p{15cm}}
+		\textbf{File} & \textbf{Operation} \\ \hline
+		medications\_uvc1.csv     & Unique Values Count on "DESCRIPTION" column \\
+		medications\_uvc2.csv     & Unique Values Count on "REASONDESCRIPTION" column \\
+		medications\_ct1.csv      & Cross Tabulation operation on "DESCRIPTION" and "REASONDESCRIPTION" \\
+		medications\_nuvc1.csv    & Unique Values Count on "DESCRIPTION" on dataframe filtered by NaN values in "REASONDESCRIPTION" \\
+		medications\_unwanted.csv & Count of Unwanted data in the dataframe 
+	\end{tabular}
+	\caption{Files with results of EDA on medications.csv}
+\end{table}
+
+
+%Based on the data in \textit{medications.csv} the following eda approach was 
 
 \begin{itemize}
-	\item A unique value count was performed on "DESCRIPTION" column and the results were stored in \textit{medications\_DESCRIPTION.csv}. Based on the data present in \textit{medications\_DESCRIPTION.csv}, it was discovered that \hl{\textbf{\textit{Hydrochlorothiazide 25 MG Oral Tablet}} was the most common entry in the file.}
+%	\item A unique value count was performed on "DESCRIPTION" column and the results were stored in \textit{medications\_DESCRIPTION.csv}. Based on the data present in \textit{medications\_DESCRIPTION.csv}, it was discovered that \hl{\textbf{\textit{Hydrochlorothiazide 25 MG Oral Tablet}} was the most common entry in the file.}
+	\item \textbf{Hydrochlorothiazide 25 MG Oral Tablet} is the most common medication (see \textit{medication\_uvc1.csv}).
 	
-	\item A unique value count was also performed on the "REASONDESCRIPTION" column and the results were stored in \textit{medications\_REASONDESCRIPTION.csv}. Based on the data it can be stated that \hl{\textbf{null} is the most commonly occuring value and \textbf{Hypertension} is the second most commonly occuring value.}
+	\item Most medications are prescribed for minor medical reasons i.e. "REASONDESCRIPTION" having a \textbf{NaN value}, the second most common reason \textbf{Hypertension}.
 	
-	\item To determine what medication is used for what purpose a cross tabulation operation was performed on "DESCRIPTION" and "REASONDECSRIPTION" column and the results were stored in \textit{medications\_crosstab\_DESCRIPTION\_REASONDESCRIPTION.csv}. Based on the data in this it was discovered \hl{that one medication could be used to treat different conditions.}
+%	\item A unique value count was also performed on the "REASONDESCRIPTION" column and the results were stored in \textit{medications\_REASONDESCRIPTION.csv}. Based on the data it can be stated that \hl{\textbf{null} is the most commonly occuring value and \textbf{Hypertension} is the second most commonly occuring value.}
 	
-	\item It was observed that a lot of entries in "REASONDESCRIPTION" column are null values hence the dataframe was filtered by null values and unique values count was performed on the "DESCRIPTION"  column, the results of this operation are stored in \textit{medications\_REASONDESCRIPTION\_null\_DESCRIPTION.csv}. \hl{The most frequent entry in in the DESCRIPTION column when REASONDESCRIPTION is null is \textbf{Nitroglycerin 0.4 MG/ACTUAT Mucosal Spray.}}
+%	\item To determine what medication is used for what purpose a cross tabulation operation was performed on "DESCRIPTION" and "REASONDECSRIPTION" column and the results were stored in \textit{medications\_crosstab\_DESCRIPTION\_REASONDESCRIPTION.csv}. Based on the data in this it was discovered \hl{that one medication could be used to treat different conditions.}
+
+	\item One medication could be used to treat different conditions (see \textit{medications\_ct1.csv})
+	
+	\item In the absence on of any major medical reason i.e. "REASONDESCRIPTION" column has \textbf{NaN value} the most frequent entry in the data base is \textbf{Nitroglycerin 0.4 MG/ACTUAT Mucosal Spray} (see \textit{medication\_nuvc1.csv})
+	
+%	\item It was observed that a lot of entries in "REASONDESCRIPTION" column are null values hence the dataframe was filtered by null values and unique values count was performed on the "DESCRIPTION"  column, the results of this operation are stored in \textit{medications\_REASONDESCRIPTION\_null\_DESCRIPTION.csv}. \hl{The most frequent entry in in the DESCRIPTION column when REASONDESCRIPTION is null is \textbf{Nitroglycerin 0.4 MG/ACTUAT Mucosal Spray.}}
 \end{itemize} 
 
 \subsubsection{observations.csv}
-Although it was difficult to draw any conclusions from \textit{observations.csv}, but the following approach was adopted to perform EDA :
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{p{5cm}|p{14.5cm}}
+		\textbf{File} & \textbf{Operations} \\ \hline
+		observations\_uvc1.csv     & Unique Values Count on "DESCRIPTION" column \\
+		observations\_unwanted.csv & Count of Unwanted Data in the Dataframe
+		\end{tabular}
+	\caption{Files with results of EDA on observations.csv}
+\end{table}
+
+%Although it was difficult to draw any conclusions from \textit{observations.csv}, but the following approach was adopted to perform EDA :
 
 \begin{itemize}
-	\item A unique values count was performed on the "DESCRIPTION" column and the results were stored in \textit{procedures\_DESCRIPTION.csv}. Based on the entries in the file it can be observed that \hl{\textbf{Pain severity - 0-10 verbal numeric rating [Score] - Reported} is the most frequently occurring value.}
-	
-	\item A further analysis needs to be performed to extract meaningful features from this dataframe. 
+%	\item A unique values count was performed on the "DESCRIPTION" column and the results were stored in \textit{procedures\_DESCRIPTION.csv}. Based on the entries in the file it can be observed that \hl{\textbf{Pain severity - 0-10 verbal numeric rating [Score] - Reported} is the most frequently occurring value.}
+%	
+%	\item A further analysis needs to be performed to extract meaningful features from this dataframe. 
+
+\item \textbf{Pain severity - 0-10 verbal numeric rating [Score] - Reported} is the most commonly performed procedure.
+
+\item Based on the nature of the data it is difficult to draw any meaningful conclusion, thus a further analysis is required to draw meaningful insights.
+
+\item Based on an initial analysis it was observed that "ENCOUNTER" and "UNITS" column has some \textbf{NaN values} and some values in the "VALUE" column are also zero. \hl{Thus based on an initial analysis it can be stated that \textit{observations.csv} does have some unwanted data.}
+
 \end{itemize}
 
 \subsubsection{procedures.csv}
 
-Based on the entries in \textit{procedures.csv} the following EDA approach was followed:
+\begin{table}[H]
+	\centering
+	\begin{tabular}{p{4.5cm}|p{15cm}}
+		\textbf{File}            & \textbf{Operation} \\ \hline
+		procedures\_uvc1.csv     & Unique Values Count on "DESCRIPTION" column \\
+		procedures\_uvc2.csv     & Unique Values Count on "REASONDESCRIPTION" column \\
+		procedures\_ct1.csv      & Cross Tabulation operation on "DESCRIPTION" and "REASONDESCRIPTION" \\
+		procedures\_nuvc11.csv      & Unique Values Count on "DESCRIPTION" on dataframe filtered by NaN Values in "REASONDESCRIPTION" \\
+		procedures\_unwanted.csv & Count of unwanted data on dataframe
+	\end{tabular}
+	\caption{Files with results of EDA on procedures.csv}
+\end{table}
+
+%Based on the entries in \textit{procedures.csv} the following EDA approach was followed:
 \begin{itemize}
-	\item A unique values count was performed on "DESCRIPTION" column, the results were stored in \textit{procedures\_DESCRIPTION.csv}. Based on this operation we can conclude that \hl{\textbf{Medication Reconciliation (procedure)} is the most frequent value}
+%	\item A unique values count was performed on "DESCRIPTION" column, the results were stored in \textit{procedures\_DESCRIPTION.csv}. Based on this operation we can conclude that \hl{\textbf{Medication Reconciliation (procedure)} is the most frequent value}
+
+	\item \textbf{Medication Reconciliation (procedure)} is the most frequently performed procedure (see \textit{procedures\_uvc1.csv}).
 	
-	\item A unique value count was also performed on "REASONDESCRIPTION" column and the results were stored in \textit{procedures\_REASONDESCRIPTION.csv}. Based on the results of this operation it can be \hl{\textbf{Normal Pregnenecy} is the most occuring value}.
+%	\item A unique value count was also performed on "REASONDESCRIPTION" column and the results were stored in \textit{procedures\_REASONDESCRIPTION.csv}. Based on the results of this operation it can be \hl{\textbf{Normal Pregnenecy} is the most occuring value}.
 	
-	\item To understand which procedure are performed for which reason a cross tabulation operation was performed between "DESCRIPTION" and "REASONDESCRIPTION" column and the results were stored in \textit{procedures\_crosstab\_DESCRIPTION\_REASONDESCRIPTION.csv}. Based on the results it was observed that \hl{one procedure could be performed for several different conditions.}
+	\item Most of the procedures are performed due to \textbf{Normal Pregnenecy} (see \textit{procedures\_uvc2.csv})
+	
+	\item It was observed that "REASONDESCRIPTION" does contain some \textbf{NaN Values} (see \textit{procedures\_nuvc1.csv}). However these cannot be regarded as missing values as this represents the cases where there is no major medical reason.
+	
+	\item Even in the absence of any major medical reason it was observed that \textbf{Medication Reconciliation (procedure)} was most frequently performed procedure(see \textit{procedures\_nuvc1.csv}) however it must be observed that in the absence of any major medical reason i.e. "REASONDESCRIPTION" column has a \textbf{NaN Value}.  
+	
+%	\item To understand which procedure are performed for which reason a cross tabulation operation was performed between "DESCRIPTION" and "REASONDESCRIPTION" column and the results were stored in \textit{procedures\_crosstab\_DESCRIPTION\_REASONDESCRIPTION.csv}. Based on the results it was observed that \hl{one procedure could be performed for several different conditions.}
+
+	\item On a closer obervation it could be observed that a procedure could be performed for multiple medical reasons (see \textit{procedures\_ct1.csv})
 	
 \end{itemize} 
-
-
 
 %\bibliographystyle{ieeetr}
 %\bibliography{myrefrences}

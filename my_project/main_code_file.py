@@ -28,10 +28,11 @@ def unique_writer(df_temp, rowname, filename):
 # file_name [string] name of the the file in which results need to be stored in csv format
 # OUTPUT:
 # CSV file with output of the operation
-def count_unwanted(dataframe_name, file_name):
+def count_unwanted(dataframe_address, file_name):
 
-    df_temp = spark.read.csv(dataframe_name, header=True)
+    df_temp = spark.read.csv(dataframe_address, header=True)
 
+    # unique_count = []
     nan_count = []
     null_count = []
     q_count = []
@@ -40,11 +41,13 @@ def count_unwanted(dataframe_name, file_name):
 
     for i in df_temp.columns:
         column_index.append(i)
+        # unique_count.append(df_temp.select(i).distinct().count())
         nan_count.append(df_temp.where(df_temp[i].isNull()).count())
         null_count.append(df_temp.filter(df_temp[i] == 'NaN').count())
         q_count.append(df_temp.filter(df_temp[i] == '?').count())
         zero_count.append(df_temp.filter(df_temp[i] == 0).count())
 
+    # unwanted_data = {"unique":unique_count, "nan_count": nan_count, "null_count": null_count, "q_count": q_count, "zero_count": zero_count}
     unwanted_data = {"nan_count": nan_count, "null_count": null_count, "q_count": q_count, "zero_count": zero_count}
 
     pd.DataFrame(unwanted_data, index=column_index).to_csv(file_name)
@@ -59,7 +62,7 @@ def count_unwanted(dataframe_name, file_name):
 
 # Importing Libraries and functionality
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col
+from pyspark.sql.functions import col, countDistinct
 import pandas as pd
 
 spark = SparkSession.builder.getOrCreate() # Creating Spark Session
@@ -72,12 +75,12 @@ spark = SparkSession.builder.getOrCreate() # Creating Spark Session
 
 df_temp = spark.read.csv("dataset_project_1/allergies.csv", header=True)
 
-unique_writer(df_temp, "DESCRIPTION", "eda/allergies_DESCRIPTION.csv") # Unique Values in the the DESCRIPTION column
-unique_writer(df_temp, "PATIENT", "eda/allergies_PATIENT.csv") # Unique Values in the patient column
+unique_writer(df_temp, "DESCRIPTION", "eda/allergies_uvc1.csv") # Unique Values in the the DESCRIPTION column
+unique_writer(df_temp, "PATIENT", "eda/allergies_uvc2.csv") # Unique Values in the patient column
 
 # Determining if there are patients with multiple ongoing allergies
 df_temp = df_temp.where(df_temp["STOP"].isNull())
-unique_writer(df_temp, "PATIENT", "eda/allergies_ongoing.csv")
+unique_writer(df_temp, "PATIENT", "eda/allergies_nuvc1.csv")
 
 # Unwanted Data
 count_unwanted("dataset_project_1/allergies.csv", "eda/allergies_unwanted.csv")
@@ -88,35 +91,37 @@ count_unwanted("dataset_project_1/allergies.csv", "eda/allergies_unwanted.csv")
 
 df_temp = spark.read.csv("dataset_project_1/careplans.csv", header=True)
 
-unique_writer(df_temp, "PATIENT", "eda/careplans_PATIENT.csv") # Unique Values in the Patient Column
+# Unique Values Count
+unique_writer(df_temp, "PATIENT", "eda/careplans_uvc1.csv") # PATIENT Column
+unique_writer(df_temp, "DESCRIPTION", "eda/careplans_uvc2.csv") # DESCRIPTION column
+unique_writer(df_temp, "REASONDESCRIPTION", "eda/careplans_uvc3.csv") # REASONDESCRIPTION column
 
-# Determining if a patient can have multiple ongoing care plans
-df_temp1 = df_temp.where(df_temp["STOP"].isNull()) # Filtering the data by null values
-unique_writer(df_temp1, "PATIENT", "eda/careplans_ongoing.csv") # unique values count on PATIENT column
+# Unique Values Count on Datafarem filtered by NaN values
+df_temp1 = df_temp.where(df_temp["STOP"].isNull()) # Filtering the data by null values in STOP column
+unique_writer(df_temp1, "PATIENT", "eda/careplans_nuvc1.csv") # unique values count on PATIENT column
 
-unique_writer(df_temp, "DESCRIPTION", "eda/careplans_DESCRIPTION.csv") # Unique values in the DESCRIPTION column
-unique_writer(df_temp, "REASONDESCRIPTION", "eda/careplans_REASONDESCRIPTION.csv") # Unique Values in the REASONDESCRIPTION column
+df_temp2 = df_temp.where(df_temp["REASONDESCRIPTION"].isNull()) # Filtering the data by NaN values in REASONDESCRIPTION column
+unique_writer(df_temp2, "DESCRIPTION", "eda/careplans_nuvc2.csv") # Unique values on the DESCRITION column
 
-# Determining the DESCRIPTION value when the REASONDESCRIPTION column is empty
-df_temp2 = df_temp.where(df_temp["REASONDESCRIPTION"].isNull()) # Filtering the dat by null values
-unique_writer(df_temp2, "DESCRIPTION", "eda/careplans_REASONDESCRIPTION_null.csv") # Unique values in the REASONDESCRITION column
 
 count_unwanted("dataset_project_1/careplans.csv", "eda/careplans_unwanted.csv") # Unwanted Data
+
 ###############################################################################################
 
 # CONDITIONS #
 
-df_temp = spark.read.csv("dataset_project_1/conditions.csv", header=True)
+df_temp = spark.read.csv("dataset_project_1/conditions.csv", header=True) # Reading the dataframe
 
-unique_writer(df_temp, "DESCRIPTION", "eda/conditions_DESCRIPTIONS.csv") # Unique Values in the DESCRIPTION Column
+# Unique Values Count
+unique_writer(df_temp, "DESCRIPTION", "eda/conditions_uvc1.csv") # DESCRIPTION Column
 
-# Determining Conditions with no STOP date i.e. chronic conditions
-df_temp1 = df_temp.where(df_temp["STOP"].isNull())
-unique_writer(df_temp1, "DESCRIPTION", "eda/conditions_STOP_null.csv") # The conditions in this file will be called "Assumed chronic"
+# Unique Values Count on null filtered Dataframe
+df_temp1 = df_temp.where(df_temp["STOP"].isNull()) # Filtering by NaN values in STOP ccolumn
+unique_writer(df_temp1, "DESCRIPTION", "eda/conditions_nuvc1.csv") # performing unique values count - The conditions in this file will be called "Assumed chronic"
 
 # Dtermining if any of the conditions which do not have a stop date has stop dates in any of the enteries
 chronic_conditions = set(df_temp1.toPandas()["DESCRIPTION"].tolist()) # Set of all the conditions which do not have a STOP date
-df_temp2 = df_temp.where(df_temp["DESCRIPTION"].isin(chronic_conditions)) # Filtering the dataframe with the above setd
+df_temp2 = df_temp.where(df_temp["DESCRIPTION"].isin(chronic_conditions)) # Filtering the dataframe with the above set
 df_temp3 = df_temp2.where(df_temp2["STOP"].isNotNull()) # Filtering the dataset again to have non Null Values
 unique_writer(df_temp3, "DESCRIPTION", "eda/conditions_psudo_chroninc.csv") # Writing the results to a file
 
@@ -124,7 +129,7 @@ unique_writer(df_temp3, "DESCRIPTION", "eda/conditions_psudo_chroninc.csv") # Wr
 # having no stop date ) in some enteries but actually have STOP dates in some other enteries.
 
 # Making a list of chronic situations
-df_temp1 = spark.read.csv("eda/conditions_STOP_null.csv", header=True) # File with conditions from enteris which have no STOP date
+df_temp1 = spark.read.csv("eda/conditions_nuvc1.csv", header=True) # File with conditions from enteris which have no STOP date
 df_temp2 = spark.read.csv("eda/conditions_psudo_chroninc.csv", header=True) # File with enteries with psudo chronic conditions
 assumed_chronic = set(df_temp1.toPandas()["DESCRIPTION"].tolist()) # set of conditions which have no STOP dates
 psudo_chronic = set(df_temp2.toPandas()["DESCRIPTION"].tolist()) # set of psudo chronic conditions
@@ -138,24 +143,26 @@ df_chronic.to_csv("preprocessed/conditions_chronic.csv", index=False, header=Fal
 
 df_temp = spark.read.csv("dataset_project_1/encounters.csv", header=True)
 
-unique_writer(df_temp, "REASONDESCRIPTION", "eda/encounters_REASONDESCRIPTION.csv") # Unique Value Count on REASONDESCRIPTION column
-unique_writer(df_temp, "DESCRIPTION", "eda/encounters_DESCRIPTION.csv") # Unique Value Count on DESCRIPTION column
-unique_writer(df_temp, "ENCOUNTERCLASS", "eda/encounters_ENCOUNTERCLASS.csv") # Unique Value Count on ENCOUNTERCLASS column
+# Unique Values Count
+unique_writer(df_temp, "REASONDESCRIPTION", "eda/encounters_uvc1.csv") # REASONDESCRIPTION column
+unique_writer(df_temp, "DESCRIPTION", "eda/encounters_uvc2.csv") # DESCRIPTION column
+unique_writer(df_temp, "ENCOUNTERCLASS", "eda/encounters_uvc3.csv") #  ENCOUNTERCLASS column
 
 count_unwanted("dataset_project_1/encounters.csv", "eda/encounters_unwanted.csv") # Unwanted Data
 
-# Determining the ENCOUNTERCLASS and DESCRIPTION when REASONDESCRIPTION column is null
-df_temp1 = df_temp.where(df_temp["REASONDESCRIPTION"].isNull()) # Filtering the dataset by null values in REASONDECRIPTION column
-unique_writer(df_temp1, "DESCRIPTION", "eda/encounters_REASONDESCRIPTION_null_DESCRIPTION.csv") # Unique Value Count on DESCRIPTION column
-unique_writer(df_temp1, "ENCOUNTERCLASS", "eda/encounters_REASONDESCRIPTION_null_ENCOUNTERCLASS.csv") # Unique Value Count on ENCOUNTERCLASS column
+# Unique Values Count on Dataframe filtered by NaN values
+df_temp1 = df_temp.where(df_temp["REASONDESCRIPTION"].isNull()) # Filtering the dataset by NaN values in REASONDECRIPTION column
+unique_writer(df_temp1, "DESCRIPTION", "eda/encounters_nuvc1.csv") # Unique Value Count on DESCRIPTION column
+unique_writer(df_temp1, "ENCOUNTERCLASS", "eda/encounters_nuvc2.csv") # Unique Value Count on ENCOUNTERCLASS column
 
 # Cross Tabulation operations
-df_temp.crosstab("REASONDESCRIPTION", "ENCOUNTERCLASS").toPandas().to_csv("eda/encounters_crosstab_REASONDESCRIPTION_ENCOUNTERCLASS.csv", index=False) # REASONDESCRIPTION and ENCOUNTERCLASS
-df_temp.crosstab("DESCRIPTION", "ENCOUNTERCLASS").toPandas().to_csv("eda/encounters_crosstab_DESCRIPTION_ENCOUNTERCLASS.csv", index=False) # DESCRIPTION and ENCOUNTERCLASS
+df_temp.crosstab("REASONDESCRIPTION", "ENCOUNTERCLASS").toPandas().to_csv("eda/encounters_ct1.csv", index=False) # REASONDESCRIPTION and ENCOUNTERCLASS
+df_temp.crosstab("DESCRIPTION", "ENCOUNTERCLASS").toPandas().to_csv("eda/encounters_ct2.csv", index=False) # DESCRIPTION and ENCOUNTERCLASS
+df_temp.crosstab("DESCRIPTION", "REASONDESCRIPTION").toPandas().to_csv("eda/encounters_ct3.csv", index=False) # DESCRIPTION and REASONDECSRIPTION
 
-# Cross Tabulation operation when on enteries where REASONDESCRIPTION is null
-df_temp1 = df_temp.where(df_temp["REASONDESCRIPTION"].isNull())
-df_temp1.crosstab("DESCRIPTION", "ENCOUNTERCLASS").toPandas().to_csv("eda/encounters_REASONDESCRIPTION_null_crosstab.csv", index=False)
+# # Cross Tabulation operation on Dataframe filtered by NaN operations
+# df_temp1 = df_temp.where(df_temp["REASONDESCRIPTION"].isNull())
+# df_temp1.crosstab("DESCRIPTION", "ENCOUNTERCLASS").toPandas().to_csv("eda/encounters_REASONDESCRIPTION_null_crosstab.csv", index=False)
 
 ########################################################################################################################################
 
@@ -163,17 +170,17 @@ df_temp1.crosstab("DESCRIPTION", "ENCOUNTERCLASS").toPandas().to_csv("eda/encoun
 
 df_temp = spark.read.csv("dataset_project_1/imaging_studies.csv", header=True)
 
-# Performing Unique Value Count
-unique_writer(df_temp, "BODYSITE_DESCRIPTION", "eda/imaging_studies_BODYSITE_DESCRIPTION.csv") # BODYSITE_DESCRIPTION
+# Unique Values Count
+unique_writer(df_temp, "BODYSITE_DESCRIPTION", "eda/imaging_studies_uvc1.csv") # BODYSITE_DESCRIPTION
 # unique_writer(df_temp, "MODALITY_DESCRIPTION", "eda/imaging_studies_MODALITY_DESCRIPTION.csv") # MODATLITY_DESCRIPTION
-unique_writer(df_temp, "SOP_DESCRIPTION", "eda/imaging_studies_SOP_DESCRIPTION.csv") # SOP_DESCRIPTION
-
-# Perfoming Cross Tabulation Operation
-# df_temp.crosstab("BODYSITE_DESCRIPTION", "MODALITY_DESCRIPTION").toPandas().to_csv("eda/imaging_studies_crosstab_BODYSITE_DESCRIPTION_MODALITY_DESCRIPTION.csv", index=False)
-df_temp.crosstab("BODYSITE_DESCRIPTION", "SOP_DESCRIPTION").toPandas().to_csv("eda/imaging_studies_crosstab_BODYSITE_DESCRIPTION_SOP_DESCRIPTION.csv", index=False)
-df_temp.crosstab("MODALITY_DESCRIPTION", "SOP_DESCRIPTION").toPandas().to_csv("eda/imaging_studies_crosstab_MODALITY_DESCRIPTION_SOP_DESCRIPTION.csv", index=False)
+unique_writer(df_temp, "SOP_DESCRIPTION", "eda/imaging_studies_uvc2.csv") # SOP_DESCRIPTION
 
 count_unwanted("dataset_project_1/imaging_studies.csv", "eda/imaging_studies_unwanted.csv")
+
+# Cross Tabulation Operation
+# df_temp.crosstab("BODYSITE_DESCRIPTION", "MODALITY_DESCRIPTION").toPandas().to_csv("eda/imaging_studies_crosstab_BODYSITE_DESCRIPTION_MODALITY_DESCRIPTION.csv", index=False)
+df_temp.crosstab("BODYSITE_DESCRIPTION", "SOP_DESCRIPTION").toPandas().to_csv("eda/imaging_studies_ct1.csv", index=False) # BODYSITE_DESCRIPTION and SOP_DESCRIPTION
+df_temp.crosstab("MODALITY_DESCRIPTION", "SOP_DESCRIPTION").toPandas().to_csv("eda/imaging_studies_ct2.csv", index=False) # MODALITY_DESCRIPTION and SOP_DESCRIPTION
 
 ###############################################################################################################################
 
@@ -181,8 +188,8 @@ count_unwanted("dataset_project_1/imaging_studies.csv", "eda/imaging_studies_unw
 
 df_temp = spark.read.csv("dataset_project_1/immunizations.csv", header=True)
 
-# Performing Unique Value Counts
-unique_writer(df_temp, "DESCRIPTION", "eda/imunization_DESCRIPTION.csv")
+# Unique Values Count
+unique_writer(df_temp, "DESCRIPTION", "eda/imunization_uvc1.csv")
 
 count_unwanted("dataset_project_1/immunizations.csv", "eda/immunization_unwanted.csv") # Unwanted Data
 
@@ -192,16 +199,16 @@ count_unwanted("dataset_project_1/immunizations.csv", "eda/immunization_unwanted
 
 df_temp = spark.read.csv("dataset_project_1/medications.csv", header=True)
 
-# Unique Value Counts
-unique_writer(df_temp, "DESCRIPTION", "eda/medications_DESCRIPTION.csv") # DESCRIPTION
-unique_writer(df_temp, "REASONDESCRIPTION", "eda/medications_REASONDESCRIPTION.csv") # REASONDECRIPTION
+# Unique Values Count
+unique_writer(df_temp, "DESCRIPTION", "eda/medications_uvc1.csv") # DESCRIPTION
+unique_writer(df_temp, "REASONDESCRIPTION", "eda/medications_uvc2.csv") # REASONDECRIPTION
+#
+# # Cross Tabulation Operation
+df_temp.crosstab("DESCRIPTION", "REASONDESCRIPTION").toPandas().to_csv("eda/medications_ct1.csv", index=False)
 
-# Cross Tabulation Operation
-df_temp.crosstab("DESCRIPTION", "REASONDESCRIPTION").toPandas().to_csv("eda/medications_crosstab_DESCRIPTION_REASONDESCRIPTION.csv", index=False)
-
-# Unique Values Count(filtered by null values in REASONDESCRIPTION)
-df_temp1 = df_temp.where(df_temp["REASONDESCRIPTION"].isNull())
-unique_writer(df_temp1, "DESCRIPTION", "eda/medications_REASONDESCRIPTION_null_DESCRIPTION.csv")
+# Unique Values Count on Dataframe filtered by null values
+df_temp1 = df_temp.where(df_temp["REASONDESCRIPTION"].isNull()) # filtering by NaN values in REASONDESCRIPTION column
+unique_writer(df_temp1, "DESCRIPTION", "eda/medications_nuvc1.csv") #unique values count on DESCRIPTION
 
 ###########################################################################################
 
@@ -212,15 +219,23 @@ df_temp = spark.read.csv("dataset_project_1/observations.csv", header=True)
 # Unique Value Counts
 unique_writer(df_temp, "DESCRIPTION", "eda/observation_DESCRIPTION.csv")
 
+count_unwanted("dataset_project_1/observations.csv", "eda/observations_unwanted.csv")
+
 ############################################################################
 
-# Procedures
+# PROCEDURES #
 
 df_temp = spark.read.csv("dataset_project_1/procedures.csv", header=True)
 
-# Unique Value Counts
-unique_writer(df_temp, "DESCRIPTION", "eda/procedures_DESCRIPTION.csv")
-unique_writer(df_temp, "REASONDESCRIPTION", "eda/procedures_REASONDESCRIPTION.csv")
+# Unique Values Count
+unique_writer(df_temp, "DESCRIPTION", "eda/procedures_uvc1.csv") # DESCRIPTION column
+unique_writer(df_temp, "REASONDESCRIPTION", "eda/procedures_uvc2.csv") # REASONDESCRIPTION column
+
+count_unwanted("dataset_project_1/procedures.csv", "eda/procedures_unwabted.csv") # Unwanted Data
+
+# Unique Values Count on Dataframe filtered by Null Values
+df_temp1 = df_temp.where(df_temp["REASONDESCRIPTION"].isNull()) # Filtering by null values in REASONDESCRIPTION
+unique_writer(df_temp1, "DESCRIPTION", "eda/procedures_nuvc1.csv") # counting unique values in DESCRIPTION column
 
 # Cross Tabulation Operation
-df_temp.crosstab("DESCRIPTION", "REASONDESCRIPTION").toPandas().to_csv("eda/procedures_crosstab_DESCRIPTION_REASONDESCRIPTION.csv", index=False)
+df_temp.crosstab("DESCRIPTION", "REASONDESCRIPTION").toPandas().to_csv("eda/procedures_ct1.csv", index=False) # DESCRIPTION and REASONDESCRIPTION
