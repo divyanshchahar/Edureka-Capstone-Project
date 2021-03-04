@@ -253,6 +253,11 @@ now = datetime.now()
 dt_string = now.strftime("%d-%m-%Y %H:%M:%S")
 print("EDA - UNDERSTANDING ENTRIES finished at:",dt_string)
 
+
+now = datetime.now()
+dt_string = now.strftime("%d-%m-%Y %H:%M:%S")
+print("EDA - UNDERSTANDING ENTRIES finished at:",dt_string)
+
 # #########################################################################################################################################################################
 
 ############################
