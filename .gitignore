@@ -3,7 +3,8 @@ projects/project_2/dataset_project_2
 projects/project_3/dataset_project_3
 my_project/dataset_project_1
 my_project/.idea
-my_project/eda/*.csv
+my_project/.ipynb_checkpoints
+my_project/eda/understanding_entries/*.csv
 my_project/report/images
 my_project/report/report.aux
 my_project/report/report.bbl
