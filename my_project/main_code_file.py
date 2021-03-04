@@ -14,7 +14,7 @@
 # rowname [string] name of the string whose values need to counted
 # filename [string] name of the file which will store the result
 # OUTPUT:
-# CSV file with results of the operation
+# csv file with results of the operation
 def unique_writer(df_temp, rowname, filename):
     df_unique = df_temp.groupby(rowname).count().sort(col("count").desc())
     df_unique.toPandas().to_csv(filename, index=False)
@@ -27,7 +27,7 @@ def unique_writer(df_temp, rowname, filename):
 # dataframe_name [string] name of the the dataframe on which operation needs to be preformed
 # file_name [string] name of the the file in which results need to be stored in csv format
 # OUTPUT:
-# CSV file with output of the operation
+# csv file with output of the operation
 def count_unwanted(dataframe_address, file_name):
 
     df_temp = spark.read.csv(dataframe_address, header=True)
@@ -51,6 +51,49 @@ def count_unwanted(dataframe_address, file_name):
     unwanted_data = {"nan_count": nan_count, "null_count": null_count, "q_count": q_count, "zero_count": zero_count}
 
     pd.DataFrame(unwanted_data, index=column_index).to_csv(file_name)
+
+############################
+# FUNCTION TO GROUP VALUES #
+############################
+# INPUT:
+# df [pyspak dataframe] Dataframe containing groups and values
+# grouping_column [string] column of the dataframe which will form groups
+# values_column [string] column which contains the values
+# file_name [string] name of the file which will store the results
+# OUTPUT:
+# text file containing the results of grouping operation
+def group_values(df, grouping_clmn, values_column, file_name):
+
+    df1 = df.where(df[grouping_clmn].isNull())
+
+    nvls= set(df1.toPandas()[values_column].tolist())
+
+    f = open(file_name, "w")
+    f.write("GROUPED BY: " + str(grouping_clmn) + "\n")
+    f.write("VALUES: " + str(values_column) + "\n")
+    f.write("___________________________________________________________" + "\n")
+    f.write("\n")
+
+    f.write("NONE \n")
+    for nvl in nvls:
+        f.write(nvl.lower())
+        f.write("\n")
+
+    df2 = df.where(df[grouping_clmn].isNotNull())
+    grps = set(df2.toPandas()[grouping_clmn].tolist())
+
+    for grp in grps:
+        f.write(str(grp).upper())
+        f.write("\n")
+        df_temp1 = df_temp.where(df_temp[grouping_clmn] == grp)
+        vlus = set(df_temp1.toPandas()[values_column].tolist())
+        for vls in vlus:
+            f.write(str(vls).lower())
+            f.write("\n")
+        f.write("\n")
+    f.close()
+
+
 
 
 
@@ -253,13 +296,22 @@ now = datetime.now()
 dt_string = now.strftime("%d-%m-%Y %H:%M:%S")
 print("EDA - UNDERSTANDING ENTRIES finished at:",dt_string)
 
-
-now = datetime.now()
-dt_string = now.strftime("%d-%m-%Y %H:%M:%S")
-print("EDA - UNDERSTANDING ENTRIES finished at:",dt_string)
-
-# #########################################################################################################################################################################
+#########################################################################################################################################################################
 
 ############################
 # EDA - UNDERSTANDING DATA #
 ############################
+
+# CAREPLANS #
+
+df_temp = spark.read.csv("dataset_project_1/careplans.csv", header=True)
+
+group_values(df_temp, "DESCRIPTION", "REASONDESCRIPTION", r"eda/understanding_data/careplans_1.txt")
+group_values(df_temp, "REASONDESCRIPTION", "DESCRIPTION", r"eda/understanding_data/careplans_2.txt")
+
+########################################################################################################################
+
+
+
+
+
